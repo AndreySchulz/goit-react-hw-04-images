@@ -83,5 +83,4 @@ export default ImageGallery;
 
 ImageGallery.propTypes = {
   query: PropTypes.string.isRequired,
-  modalData: PropTypes.object.isRequired,
 };

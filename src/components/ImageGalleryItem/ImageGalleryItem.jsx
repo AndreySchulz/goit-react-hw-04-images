@@ -27,11 +27,9 @@ class ImageGalleryItem extends Component {
 export default ImageGalleryItem;
 
 ImageGalleryItem.propTypes = {
-  image: PropTypes.arrayOf(
-    PropTypes.shape({
-      largeImageURL: PropTypes.string.isRequired,
-      webformatURL: PropTypes.string.isRequired,
-      tags: PropTypes.string.isRequired,
-    }).isRequired
-  ).isRequired,
+  image: PropTypes.shape({
+    largeImageURL: PropTypes.string.isRequired,
+    webformatURL: PropTypes.string.isRequired,
+    tags: PropTypes.string.isRequired,
+  }).isRequired,
 };
