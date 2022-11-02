@@ -46,14 +46,10 @@ export default Modal;
 
 Modal.propTypes = {
   closeModal: PropTypes.func.isRequired,
-  modalData: PropTypes.arrayOf(
-    PropTypes.shape({
-      modalData: PropTypes.arrayOf(
-        PropTypes.shape({
-          largeImageURL: PropTypes.string.isRequired,
-          tags: PropTypes.string.isRequired,
-        }).isRequired
-      ).isRequired,
-    })
-  ),
+  modalData: PropTypes.shape({
+    modalData: PropTypes.shape({
+      largeImageURL: PropTypes.string.isRequired,
+      tags: PropTypes.string.isRequired,
+    }),
+  }).isRequired,
 };
