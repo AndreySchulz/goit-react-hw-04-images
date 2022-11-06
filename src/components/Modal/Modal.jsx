@@ -1,4 +1,4 @@
-import { Component } from 'react';
+// import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import { Overlay, ModalBox } from './Modal.styled';
@@ -7,39 +7,35 @@ import { Overlay, ModalBox } from './Modal.styled';
 
 const modalRoot = document.querySelector('#modal');
 
-class Modal extends Component {
-  state = {};
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleCloseByEsc);
-  }
+function Modal({ modalData, closeModal }) {
+  // componentDidMount() {
+  //   window.addEventListener('keydown', this.handleCloseByEsc);
+  // }
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleCloseByEsc);
-  }
+  // componentWillUnmount() {
+  //   window.removeEventListener('keydown', this.handleCloseByEsc);
+  // }
 
-  handleCloseByEsc = e => {
+  const handleCloseByEsc = e => {
     if (e.code === 'Escape') {
-      this.props.closeModal();
+      closeModal();
     }
   };
 
-  handleBackdropClick = e => {
+  const handleBackdropClick = e => {
     if (e.target === e.currentTarget) {
-      this.props.closeModal();
+      closeModal();
     }
   };
-
-  render() {
-    const { modalData } = this.props.modalData;
-    return createPortal(
-      <Overlay onClick={this.handleBackdropClick}>
-        <ModalBox>
-          <img src={modalData.largeImageURL} alt={modalData.tags} />
-        </ModalBox>
-      </Overlay>,
-      modalRoot
-    );
-  }
+  window.addEventListener('keydown', handleCloseByEsc);
+  return createPortal(
+    <Overlay onClick={handleBackdropClick}>
+      <ModalBox>
+        <img src={modalData.largeImageURL} alt={modalData.tags} />
+      </ModalBox>
+    </Overlay>,
+    modalRoot
+  );
 }
 
 export default Modal;
@@ -47,9 +43,7 @@ export default Modal;
 Modal.propTypes = {
   closeModal: PropTypes.func.isRequired,
   modalData: PropTypes.shape({
-    modalData: PropTypes.shape({
-      largeImageURL: PropTypes.string.isRequired,
-      tags: PropTypes.string.isRequired,
-    }),
+    largeImageURL: PropTypes.string.isRequired,
+    tags: PropTypes.string.isRequired,
   }).isRequired,
 };

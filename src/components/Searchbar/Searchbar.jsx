@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   SearchbarBox,
@@ -7,35 +7,35 @@ import {
   SearchFormButtonSpan,
   SearchFormInput,
 } from './Searchbar.styled';
-class Searchbar extends Component {
-  state = {
-    input: '',
-  };
+function Searchbar({ setQuery }) {
+  const [input, setInput] = useState('');
+  // state = {
+  //   input: '',
+  // };
 
-  handleSubmit = e => {
+  const handleSubmit = e => {
     e.preventDefault();
-    this.props.setQuery(this.state.input);
+    setQuery(input.trim());
   };
-  render() {
-    return (
-      <SearchbarBox>
-        <SearchForm onSubmit={this.handleSubmit}>
-          <SearchFormButton type="submit">
-            <SearchFormButtonSpan>Search</SearchFormButtonSpan>
-          </SearchFormButton>
 
-          <SearchFormInput
-            type="text"
-            autocomplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-            value={this.state.input}
-            onChange={e => this.setState({ input: e.target.value })}
-          />
-        </SearchForm>
-      </SearchbarBox>
-    );
-  }
+  return (
+    <SearchbarBox>
+      <SearchForm onSubmit={handleSubmit}>
+        <SearchFormButton type="submit">
+          <SearchFormButtonSpan>Search</SearchFormButtonSpan>
+        </SearchFormButton>
+
+        <SearchFormInput
+          type="text"
+          autocomplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+          value={input}
+          onChange={e => setInput(e.target.value)}
+        />
+      </SearchForm>
+    </SearchbarBox>
+  );
 }
 
 export default Searchbar;

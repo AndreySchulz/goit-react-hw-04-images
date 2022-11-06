@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { searchImageApi } from '../../utils/imageApi';
 import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
@@ -6,79 +5,79 @@ import Loader from '../Loader/Loader';
 import Button from '../Button/Button';
 import Modal from '../Modal/Modal';
 import { ImageGalleryBox } from './ImageGallery.styled';
-class ImageGallery extends Component {
-  state = {
-    images: [],
-    isLoading: false,
-    isOpen: false,
-    error: null,
-    totalPages: 0,
-    page: 1,
-    query: '',
-    modalData: {},
+import { useState, useEffect } from 'react';
+function ImageGallery({ query }) {
+  const [images, setImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [error, setError] = useState(null);
+  const [totalPages, setTotalPages] = useState(0);
+  const [page, setPage] = useState(1);
+  const [modalData, setModalData] = useState({});
+  // static getDerivedStateFromProps(nextProps, state) {
+  //   if (nextProps.query !== state.query) {
+  //     return { page: 1, query: nextProps.query };
+  //   }
+  //   return state;
+  // }
+
+  // componentDidUpdate(prevProps, prevState, snapshot) {
+  //   if (
+  //     prevProps.query !== this.props.query ||
+  //     prevState.page !== this.state.page
+  //   ) {
+  //     this.searchImage();
+  //   }
+  // }
+  const searchImage = () => {
+    setIsLoading(true);
+    searchImageApi(query, page)
+      .then(data => {
+        setImages(page === 1 ? data.hits : [...images, ...data.hits]);
+        setTotalPages(Math.ceil(data.totalHits / 12));
+      })
+      .catch(err => setError(err.message))
+      .finally(() => setIsLoading(false));
   };
-  static getDerivedStateFromProps(nextProps, state) {
-    if (nextProps.query !== state.query) {
-      return { page: 1, query: nextProps.query };
+  const updatePage = () => {
+    setPage(prev => prev + 1);
+  };
+  const openModal = modalData => {
+    setIsOpen(true);
+    setModalData(modalData);
+  };
+  const closeModal = () => {
+    setIsOpen(false);
+    setModalData({});
+  };
+  useEffect(() => {
+    if (query) {
+      searchImage();
     }
-    return state;
-  }
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if (
-      prevProps.query !== this.props.query ||
-      prevState.page !== this.state.page
-    ) {
-      this.searchImage();
-    }
-  }
-  searchImage = () => {
-    this.setState({ isLoading: true });
-    searchImageApi(this.props.query, this.state.page)
-      .then(data =>
-        this.setState(prev => ({
-          images:
-            this.state.page === 1 ? data.hits : [...prev.images, ...data.hits],
-          totalPages: Math.ceil(data.totalHits / 12),
-        }))
-      )
-      .catch(err => this.setState({ error: err.message }))
-      .finally(() => this.setState({ isLoading: false }));
-  };
-  updatePage = () => {
-    this.setState(prev => ({ page: prev.page + 1 }));
-  };
-  openModal = modalData => {
-    this.setState({ isOpen: true, modalData: { modalData } });
-  };
-  closeModal = () => {
-    this.setState({ isOpen: false, modalData: {} });
-  };
+  }, [query, page]);
 
-  render() {
-    const { images, isLoading, totalPages, page, isOpen, modalData } =
-      this.state;
-    return (
-      <>
-        <ImageGalleryBox>
-          {images.map(image => (
-            <ImageGalleryItem
-              key={image.id}
-              image={image}
-              openModal={this.openModal}
-            />
-          ))}
-        </ImageGalleryBox>
+  return (
+    <>
+      <ImageGalleryBox>
+        {images.map(image => (
+          <ImageGalleryItem
+            key={image.id}
+            image={image}
+            openModal={openModal}
+          />
+        ))}
+      </ImageGalleryBox>
 
-        {isLoading && <Loader />}
+      {isLoading && <Loader />}
 
-        {images.length > 0 && totalPages > page && (
-          <Button updatePage={this.updatePage} />
-        )}
-        {isOpen && <Modal closeModal={this.closeModal} modalData={modalData} />}
-      </>
-    );
-  }
+      {images.length > 0 && totalPages > page && (
+        <Button updatePage={updatePage} />
+      )}
+      {isOpen && <Modal closeModal={closeModal} modalData={modalData} />}
+    </>
+  );
 }
+
 export default ImageGallery;
 
 ImageGallery.propTypes = {

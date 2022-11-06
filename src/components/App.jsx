@@ -1,22 +1,15 @@
-import { Component } from 'react';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import AppBox from './App.styled';
+import { useState } from 'react';
 
-export class App extends Component {
-  state = {
-    query: '',
-  };
-  setQuery = query => {
-    this.setState({ query });
-  };
+export function App() {
+  const [query, setQuery] = useState('');
 
-  render() {
-    return (
-      <AppBox>
-        <Searchbar setQuery={this.setQuery} />
-        <ImageGallery query={this.state.query} />
-      </AppBox>
-    );
-  }
+  return (
+    <AppBox>
+      <Searchbar setQuery={setQuery} />
+      <ImageGallery query={query} />
+    </AppBox>
+  );
 }
