@@ -29,16 +29,7 @@ function ImageGallery({ query }) {
   //     this.searchImage();
   //   }
   // }
-  const searchImage = () => {
-    setIsLoading(true);
-    searchImageApi(query, page)
-      .then(data => {
-        setImages(page === 1 ? data.hits : [...images, ...data.hits]);
-        setTotalPages(Math.ceil(data.totalHits / 12));
-      })
-      .catch(err => setError(err.message))
-      .finally(() => setIsLoading(false));
-  };
+
   const updatePage = () => {
     setPage(prev => prev + 1);
   };
@@ -51,10 +42,24 @@ function ImageGallery({ query }) {
     setModalData({});
   };
   useEffect(() => {
-    if (query) {
-      searchImage();
-    }
+    if (!query) return;
+    const searchImage = () => {
+      setIsLoading(true);
+      searchImageApi(query, page)
+        .then(data => {
+          setImages(page === 1 ? data.hits : [...images, ...data.hits]);
+          setTotalPages(Math.ceil(data.totalHits / 12));
+        })
+        .catch(err => setError(err.message))
+        .finally(() => setIsLoading(false));
+    };
+
+    searchImage();
   }, [query, page]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [query]);
 
   return (
     <>
