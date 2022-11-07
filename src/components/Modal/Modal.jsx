@@ -2,6 +2,7 @@
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import { Overlay, ModalBox } from './Modal.styled';
+import { useEffect } from 'react';
 
 // ({ url, title, closeModal }) =>
 
@@ -27,7 +28,14 @@ function Modal({ modalData, closeModal }) {
       closeModal();
     }
   };
-  window.addEventListener('keydown', handleCloseByEsc);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleCloseByEsc);
+    return () => {
+      window.removeEventListener('keydown', handleCloseByEsc);
+    };
+  });
+
   return createPortal(
     <Overlay onClick={handleBackdropClick}>
       <ModalBox>

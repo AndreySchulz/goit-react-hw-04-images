@@ -47,7 +47,7 @@ function ImageGallery({ query }) {
       setIsLoading(true);
       searchImageApi(query, page)
         .then(data => {
-          setImages(page === 1 ? data.hits : [...images, ...data.hits]);
+          setImages(prev => (page === 1 ? data.hits : [...prev, ...data.hits]));
           setTotalPages(Math.ceil(data.totalHits / 12));
         })
         .catch(err => setError(err.message))
@@ -59,8 +59,11 @@ function ImageGallery({ query }) {
 
   useEffect(() => {
     setPage(1);
+    setError(null);
   }, [query]);
-
+  if (error) {
+    return <h1>{error}</h1>;
+  }
   return (
     <>
       <ImageGalleryBox>
