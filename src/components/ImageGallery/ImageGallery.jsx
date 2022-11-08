@@ -6,6 +6,7 @@ import Button from '../Button/Button';
 import Modal from '../Modal/Modal';
 import { ImageGalleryBox } from './ImageGallery.styled';
 import { useState, useEffect } from 'react';
+import { useCallback } from 'react';
 function ImageGallery({ query }) {
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -14,21 +15,6 @@ function ImageGallery({ query }) {
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
   const [modalData, setModalData] = useState({});
-  // static getDerivedStateFromProps(nextProps, state) {
-  //   if (nextProps.query !== state.query) {
-  //     return { page: 1, query: nextProps.query };
-  //   }
-  //   return state;
-  // }
-
-  // componentDidUpdate(prevProps, prevState, snapshot) {
-  //   if (
-  //     prevProps.query !== this.props.query ||
-  //     prevState.page !== this.state.page
-  //   ) {
-  //     this.searchImage();
-  //   }
-  // }
 
   const updatePage = () => {
     setPage(prev => prev + 1);
@@ -41,26 +27,34 @@ function ImageGallery({ query }) {
     setIsOpen(false);
     setModalData({});
   };
+  const searchImage = useCallback(() => {
+    setIsLoading(true);
+    searchImageApi(query, page)
+      .then(data => {
+        setImages(prev => (page === 1 ? data.hits : [...prev, ...data.hits]));
+        setTotalPages(Math.ceil(data.totalHits / 12));
+      })
+      .catch(err => setError(err.message))
+      .finally(() => setIsLoading(false));
+  }, [query, page]);
+  useEffect(() => {
+    if (page === 1 && query) {
+      searchImage();
+    } else {
+      setPage(1);
+    }
+
+    setError(null);
+    // eslint-disable-next-line
+  }, [query]);
+
   useEffect(() => {
     if (!query) return;
-    const searchImage = () => {
-      setIsLoading(true);
-      searchImageApi(query, page)
-        .then(data => {
-          setImages(prev => (page === 1 ? data.hits : [...prev, ...data.hits]));
-          setTotalPages(Math.ceil(data.totalHits / 12));
-        })
-        .catch(err => setError(err.message))
-        .finally(() => setIsLoading(false));
-    };
 
     searchImage();
-  }, [query, page]);
+    // eslint-disable-next-line
+  }, [page]);
 
-  useEffect(() => {
-    setPage(1);
-    setError(null);
-  }, [query]);
   if (error) {
     return <h1>{error}</h1>;
   }
